@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Artikdle</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <h1>Artikdle</h1>
+    <div class="quiz-box">
+        <div class="question" id="question">Loading...</div>
+        <input type="text" id="answerInput" placeholder="Type your answer here..." />
+        <button onclick="submitAnswer()">Submit</button>
+        <div class="feedback" id="feedback"></div>
+        <div class="score" id="score"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
