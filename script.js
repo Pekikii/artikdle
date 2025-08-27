@@ -56,12 +56,12 @@ document.addEventListener("DOMContentLoaded", function () {
     function showCompletedMessage(score, total, time) {
         const quizBox = document.querySelector('.quiz-box');
         quizBox.innerHTML = `
-            <h2>✅ You've already completed today's quiz!</h2>
-            <p class="score">Score: ${score} / ${total}</p>
-            <p class="timer">Time: ${formatTime(time)}</p>
-            <p>Come back tomorrow for a new quiz.</p>
-            <p class="countdown"><span id="countdown-timer">⏳ Calculating...</span></p>
-        `;
+    <h2>✅ Du hast das heutige Quiz bereits abgeschlossen!</h2>
+    <p class="score">Punktzahl: ${score} / ${total}</p>
+    <p class="timer">${formatTime(time)}</p>
+    <p>Komm morgen für ein neues Quiz zurück.</p>
+    <p class="countdown"><span id="countdown-timer">⏳ Wird berechnet...</span></p>
+`;
 
         // Live countdown to midnight
         const countdownEl = document.getElementById('countdown-timer');
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const minutes = Math.floor((diffSec % 3600) / 60);
             const seconds = diffSec % 60;
 
-            countdownEl.textContent = `⏳ Next quiz in: ${hours}h ${minutes}m ${seconds}s`;
+            countdownEl.textContent = `⏳ Nächstes Quiz in: ${hours}h ${minutes}m ${seconds}s`;
         }
 
         updateCountdown(); // run once immediately
@@ -96,19 +96,17 @@ document.addEventListener("DOMContentLoaded", function () {
         quizBox.innerHTML = ''; // Clear existing content
 
         const title = document.createElement('h2');
-        title.textContent = "📝 Daily Quiz - 5 Words";
+
         quizBox.appendChild(title);
 
         // Timer display
-        const timerDisplay = document.createElement('div');
-        timerDisplay.className = 'timer';
-        timerDisplay.textContent = 'Time: 0:00';
-        quizBox.appendChild(timerDisplay);
+        const timerDisplay = document.querySelector('.timer');
+        timerDisplay.textContent = '0:00';
 
         let startTime = Date.now();
         let timerInterval = setInterval(() => {
             const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-            timerDisplay.textContent = `Time: ${formatTime(elapsedSeconds)}`;
+            timerDisplay.textContent = formatTime(elapsedSeconds);
         }, 1000);
 
         const form = document.createElement('form');
@@ -119,41 +117,39 @@ document.addEventListener("DOMContentLoaded", function () {
         quizEntries.forEach((entry, index) => {
             const container = document.createElement('div');
             container.classList.add('quiz-row');
-            container.style.display = 'flex';
-            container.style.alignItems = 'center';
-            container.style.marginBottom = '8px';
-            container.style.gap = '12px';
 
             const input = document.createElement('input');
             input.type = 'text';
             input.id = `answer-${index}`;
             input.dataset.correct = entry.art;
             input.placeholder = ''; // no placeholder
-            input.style.width = '80px'; // enough for "plural"
-            input.style.padding = '4px 6px';
-            input.style.fontSize = '14px';
 
             // Handle Enter key navigation
             input.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); // prevent form submit
 
-                    const allInputs = form.querySelectorAll('input');
-                    const currentIndex = Array.from(allInputs).indexOf(input);
+                const allInputs = form.querySelectorAll('input');
+                const currentIndex = Array.from(allInputs).indexOf(input);
+
+                if (e.key === 'Enter') {
+                    e.preventDefault();
 
                     if (currentIndex < allInputs.length - 1) {
                         allInputs[currentIndex + 1].focus();
                     } else {
-                        form.requestSubmit(); // submit the form programmatically
+                        form.requestSubmit();
                     }
+                }
+
+                // Handle Backspace on empty input
+                if (e.key === 'Backspace' && input.value === '' && currentIndex > 0) {
+                    e.preventDefault();
+                    allInputs[currentIndex - 1].focus();
                 }
             });
 
             const wordSpan = document.createElement('span');
             wordSpan.textContent = entry.word;
             wordSpan.className = 'quiz-word';
-            wordSpan.style.fontSize = '16px';
-            wordSpan.style.fontWeight = '500';
 
             container.appendChild(input);
             container.appendChild(wordSpan);
@@ -162,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const submitBtn = document.createElement('button');
         submitBtn.type = 'submit';
-        submitBtn.textContent = 'Submit Answers';
+        submitBtn.textContent = 'Antworten abschicken';
         form.appendChild(submitBtn);
 
         const feedbackBox = document.createElement('div');
@@ -201,11 +197,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 const correct = entry.art.toLowerCase();
 
                 if (userAnswer === correct) {
-                    feedbackHTML += `✅ "${entry.word}": Correct!<br>`;
+                    feedbackHTML += `✅ "${entry.word}": Richtig!<br>`;
                     input.style.borderColor = 'green';
                     score++;
                 } else {
-                    feedbackHTML += `❌ "${entry.word}": Correct answer is "${correct === 'm' ? 'der' : correct === 'f' ? 'die' : correct === 'n' ? 'das' : 'Plural'}"<br>`;
+                    feedbackHTML += `❌ "${entry.word}": Die richtige Antwort ist "${correct === 'm' ? 'der' : correct === 'f' ? 'die' : correct === 'n' ? 'das' : 'Plural'}"<br>`;
                     input.style.borderColor = 'red';
                 }
 
@@ -213,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             feedbackBox.innerHTML = feedbackHTML;
-            scoreBox.textContent = `You scored ${score} out of ${quizEntries.length} in ${formatTime(totalTimeSeconds)}.`;
+            scoreBox.textContent = `Du hast ${score} von ${quizEntries.length} richtig in ${formatTime(totalTimeSeconds)}.`;
             submitBtn.disabled = true;
 
             // Save quiz completion to localStorage
